@@ -33,7 +33,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node tests/basic.test.js",
-    "test:unit": "node tests/pages-exist.test.js && node tests/assets-exist.test.js",
+    "test:unit": "node tests/run-tests.js",
     "test:signup": "node test-frontend-signup.js",
     "export": "next build && next export"
   },

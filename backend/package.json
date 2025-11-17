@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "node test-api.js",
-    "test:unit": "node tests/pagination.test.js && node tests/validation.test.js",
+    "test:unit": "node tests/run-tests.js",
     "test:auth": "node test-user-auth.js",
     "test:google": "node test-google-oauth.js",
     "test:username": "node test-username.js",

@@ -1,0 +1,286 @@
+stages:
+  - validate
+  - build
+  - test
+  - deploy-dev
+  - deploy-prod
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  REGISTRY_IMAGE: $CI_REGISTRY_IMAGE
+  BACKEND_IMAGE: $CI_REGISTRY_IMAGE/backend
+  FRONTEND_IMAGE: $CI_REGISTRY_IMAGE/frontend
+
+# Cache Docker layers
+.docker_cache: &docker_cache
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .docker-cache/
+
+# Validate stage - Check code quality and configuration
+validate:yaml:
+  stage: validate
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache yamllint
+  script:
+    - yamllint docker-compose.yml docker-compose.dev.yml .gitlab-ci.yml || true
+    - echo "YAML validation completed"
+  only:
+    - merge_requests
+    - main
+    - develop
+
+validate:dockerfiles:
+  stage: validate
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker info
+  script:
+    - |
+      echo "Validating Dockerfiles..."
+      docker build --target builder -f backend/Dockerfile.prod -t test-backend:latest ./backend || true
+      docker build --target builder -f frontend/Dockerfile.prod -t test-frontend:latest ./frontend || true
+      echo "Dockerfile validation completed"
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Build stage - Build Docker images
+build:backend:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  <<: *docker_cache
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - |
+      echo "Building backend Docker image..."
+      docker build -f backend/Dockerfile.prod -t $BACKEND_IMAGE:$IMAGE_TAG -t $BACKEND_IMAGE:latest ./backend
+      docker push $BACKEND_IMAGE:$IMAGE_TAG
+      docker push $BACKEND_IMAGE:latest
+      echo "Backend image built and pushed: $BACKEND_IMAGE:$IMAGE_TAG"
+  only:
+    - main
+    - develop
+    - merge_requests
+
+build:frontend:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  <<: *docker_cache
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - |
+      echo "Building frontend Docker image..."
+      docker build -f frontend/Dockerfile.prod -t $FRONTEND_IMAGE:$IMAGE_TAG -t $FRONTEND_IMAGE:latest ./frontend
+      docker push $FRONTEND_IMAGE:$IMAGE_TAG
+      docker push $FRONTEND_IMAGE:latest
+      echo "Frontend image built and pushed: $FRONTEND_IMAGE:$IMAGE_TAG"
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# Test stage - Run unit tests
+test:backend:
+  stage: test
+  image: node:18-alpine
+  before_script:
+    - cd backend
+    - npm ci
+  script:
+    - |
+      echo "Running backend unit tests..."
+      npm run test:unit || exit 1
+      echo "Backend tests completed successfully"
+  artifacts:
+    when: always
+    reports:
+      junit: backend/test-results/test-results.xml
+    paths:
+      - backend/test-results/test-results.xml
+    expire_in: 1 week
+  coverage: '/Lines\s*:\s*(\d+\.\d+)%/'
+  only:
+    - main
+    - develop
+    - merge_requests
+
+test:frontend:
+  stage: test
+  image: node:20-alpine
+  before_script:
+    - cd frontend
+    - npm ci --legacy-peer-deps
+  script:
+    - |
+      echo "Running frontend unit tests..."
+      npm run test:unit || exit 1
+      echo "Frontend tests completed successfully"
+  artifacts:
+    when: always
+    reports:
+      junit: frontend/test-results/test-results.xml
+    paths:
+      - frontend/test-results/test-results.xml
+    expire_in: 1 week
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# Deploy to Development Environment
+deploy:dev:
+  stage: deploy-dev
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $DEV_SERVER_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - |
+      echo "Deploying to development environment..."
+      ssh -o StrictHostKeyChecking=no $DEV_SERVER_USER@$DEV_SERVER_HOST << 'ENDSSH'
+        set -e
+        cd $DEV_DEPLOY_PATH || exit 1
+        
+        # Pull latest code
+        git fetch origin develop
+        git reset --hard origin/develop
+        
+        # Login to GitLab Container Registry
+        echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+        
+        # Pull latest images
+        docker pull $BACKEND_IMAGE:latest
+        docker pull $FRONTEND_IMAGE:latest
+        
+        # Stop existing containers
+        docker-compose -f docker-compose.yml -f docker-compose.dev.yml down || true
+        
+        # Start new containers
+        DOCKERFILE_BACKEND=Dockerfile.dev DOCKERFILE_FRONTEND=Dockerfile.dev docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+        
+        # Clean up old images
+        docker image prune -f
+        
+        # Health check
+        sleep 10
+        curl -f http://localhost/health || exit 1
+        
+        echo "Development deployment completed successfully"
+      ENDSSH
+  environment:
+    name: development
+    url: http://$DEV_SERVER_HOST
+  only:
+    - develop
+  when: manual
+
+# Deploy to Production Environment (AWS EC2)
+deploy:prod:
+  stage: deploy-prod
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $PROD_SERVER_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - |
+      echo "Deploying to production environment on AWS EC2..."
+      ssh -o StrictHostKeyChecking=no $PROD_SERVER_USER@$PROD_SERVER_HOST << 'ENDSSH'
+        set -e
+        cd $PROD_DEPLOY_PATH || exit 1
+        
+        # Create backup of current deployment
+        if [ -d "backup" ]; then
+          rm -rf backup/old
+          mv backup/current backup/old 2>/dev/null || true
+        fi
+        mkdir -p backup/current
+        docker-compose ps > backup/current/containers.txt 2>/dev/null || true
+        
+        # Pull latest code
+        git fetch origin main
+        git reset --hard origin/main
+        
+        # Login to GitLab Container Registry
+        echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+        
+        # Pull latest images
+        docker pull $BACKEND_IMAGE:$IMAGE_TAG
+        docker pull $FRONTEND_IMAGE:$IMAGE_TAG
+        
+        # Zero-downtime deployment
+        # Start new containers with different names
+        DOCKERFILE_BACKEND=Dockerfile.prod DOCKERFILE_FRONTEND=Dockerfile.prod docker-compose -f docker-compose.yml up -d --scale backend=2 --scale frontend=2 --no-recreate
+        
+        # Wait for health checks
+        echo "Waiting for new containers to be healthy..."
+        sleep 30
+        
+        # Health check
+        for i in {1..10}; do
+          if curl -f http://localhost/health; then
+            echo "Health check passed"
+            break
+          fi
+          echo "Health check attempt $i failed, retrying..."
+          sleep 5
+        done
+        
+        # Stop old containers (rolling update)
+        docker-compose -f docker-compose.yml stop backend frontend || true
+        docker-compose -f docker-compose.yml rm -f backend frontend || true
+        
+        # Start with single instance
+        DOCKERFILE_BACKEND=Dockerfile.prod DOCKERFILE_FRONTEND=Dockerfile.prod docker-compose -f docker-compose.yml up -d
+        
+        # Clean up old images
+        docker image prune -af --filter "until=24h"
+        
+        # Final health check
+        sleep 10
+        curl -f http://localhost/health || exit 1
+        
+        echo "Production deployment completed successfully"
+      ENDSSH
+  environment:
+    name: production
+    url: http://$PROD_SERVER_HOST
+  only:
+    - main
+  when: manual
+
+# Monitoring and notification (optional)
+notify:deployment:
+  stage: deploy-prod
+  image: curlimages/curl:latest
+  script:
+    - |
+      echo "Deployment notification (can be extended with webhooks)"
+      # Example: curl -X POST $WEBHOOK_URL -d "Deployment completed"
+  only:
+    - main
+  when: on_success
+
