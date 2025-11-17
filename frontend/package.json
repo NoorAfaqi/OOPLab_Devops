@@ -1,0 +1,84 @@
+{
+  "name": "ooplab-frontend-next",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Modern web development solutions by OOPLab.org - Built with Next.js, React, and Material-UI",
+  "author": {
+    "name": "Muhammad Noor Afaqi",
+    "email": "noorafaqi363@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ooplab",
+    "web development",
+    "next.js",
+    "react",
+    "material-ui",
+    "blog",
+    "portfolio",
+    "full-stack"
+  ],
+  "homepage": "https://ooplab.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OOPLab-NEXT"
+  },
+  "bugs": {
+    "url": "https://github.com/OOPLab-NEXT/issues",
+    "email": "noorafaqi363@gmail.com"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "node tests/basic.test.js",
+    "test:unit": "node tests/pages-exist.test.js && node tests/assets-exist.test.js",
+    "test:signup": "node test-frontend-signup.js",
+    "export": "next build && next export"
+  },
+  "dependencies": {
+    "@editorjs/code": "^2.9.3",
+    "@editorjs/delimiter": "^1.4.2",
+    "@editorjs/editorjs": "^2.31.0",
+    "@editorjs/header": "^2.8.8",
+    "@editorjs/image": "^2.10.3",
+    "@editorjs/link": "^2.6.2",
+    "@editorjs/list": "^2.0.8",
+    "@editorjs/paragraph": "^2.11.7",
+    "@editorjs/quote": "^2.7.6",
+    "@editorjs/table": "^2.4.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.4",
+    "@mui/lab": "^7.0.1-beta.18",
+    "@mui/material": "^7.3.4",
+    "@mui/x-date-pickers": "^8.14.1",
+    "@vercel/analytics": "^1.5.0",
+    "axios": "^1.6.2",
+    "cookie-parser": "^1.4.7",
+    "dompurify": "^3.3.0",
+    "express-session": "^1.18.2",
+    "framer-motion": "^10.16.16",
+    "googleapis": "^128.0.0",
+    "next": "^15.0.0",
+    "next-auth": "^4.24.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2",
+    "react-hot-toast": "^2.4.1",
+    "recharts": "^3.3.0",
+    "redis": "^5.9.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/dompurify": "^3.0.5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^9",
+    "eslint-config-next": "^15.0.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

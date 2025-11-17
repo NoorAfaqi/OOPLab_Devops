@@ -1,0 +1,367 @@
+import { Service, Product, TeamMember } from '../types';
+
+// Service data without JSX icons (icons will be created in components)
+export const SERVICES: Omit<Service, 'icon'>[] = [
+  {
+    id: '1',
+    title: 'Web Development',
+    description: 'Custom websites and web applications built with modern frameworks like Next.js, React, and Node.js.',
+    color: '#007AFF',
+  },
+  {
+    id: '2',
+    title: 'Mobile Apps',
+    description: 'Native and cross-platform mobile applications for iOS and Android devices.',
+    color: '#34C759',
+  },
+  {
+    id: '3',
+    title: 'AI Solutions',
+    description: 'Artificial Intelligence and Machine Learning solutions to automate and optimize your business processes.',
+    color: '#5856D6',
+  },
+  {
+    id: '4',
+    title: 'Cloud Solutions',
+    description: 'Cloud infrastructure setup and deployment using AWS, Azure, or Google Cloud.',
+    color: '#FF9500',
+  },
+];
+
+// Enhanced service data with features
+export const ENHANCED_SERVICES = [
+  {
+    id: '1',
+    title: 'Web Development',
+    description: 'Custom websites and web applications built with modern frameworks like Next.js, React, and Node.js.',
+    color: '#007AFF',
+    features: ['Responsive Design', 'SEO Optimization', 'Fast Performance', 'Modern UI/UX'],
+    technologies: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
+    icon: 'Computer',
+  },
+  {
+    id: '2',
+    title: 'Mobile Apps',
+    description: 'Native and cross-platform mobile applications for iOS and Android devices.',
+    color: '#34C759',
+    features: ['Cross-Platform', 'Native Performance', 'App Store Ready', 'Push Notifications'],
+    technologies: ['React Native', 'Flutter', 'Swift', 'Kotlin'],
+    icon: 'PhoneAndroid',
+  },
+  {
+    id: '3',
+    title: 'AI Solutions',
+    description: 'Artificial Intelligence and Machine Learning solutions to automate and optimize your business processes.',
+    color: '#5856D6',
+    features: ['Machine Learning', 'Natural Language Processing', 'Computer Vision', 'Predictive Analytics'],
+    technologies: ['Python', 'TensorFlow', 'PyTorch', 'OpenAI API'],
+    icon: 'Psychology',
+  },
+  {
+    id: '4',
+    title: 'Cloud Solutions',
+    description: 'Cloud infrastructure setup and deployment using AWS, Azure, or Google Cloud.',
+    color: '#FF9500',
+    features: ['Auto Scaling', 'Load Balancing', 'CDN Integration', 'Monitoring'],
+    technologies: ['AWS', 'Azure', 'Google Cloud', 'Docker'],
+    icon: 'CloudQueue',
+  },
+];
+
+// Product data without JSX icons
+export const PRODUCTS: Omit<Product, 'icon'>[] = [
+  {
+    id: '1',
+    name: 'Web Development Solutions',
+    description: 'Custom web applications built with modern frameworks like Next.js, React, and Node.js.',
+    features: ['Responsive Design', 'SEO Optimized', 'Fast Performance', 'Scalable Architecture'],
+    price: 'Starting at $2,500',
+    category: 'Web Development',
+    color: '#007AFF',
+  },
+  {
+    id: '2',
+    name: 'Mobile App Development',
+    description: 'Native and cross-platform mobile applications for iOS and Android devices.',
+    features: ['Cross-Platform', 'Native Performance', 'App Store Ready', 'Push Notifications'],
+    price: 'Starting at $5,000',
+    category: 'Mobile Development',
+    color: '#34C759',
+  },
+  {
+    id: '3',
+    name: 'AI Solutions',
+    description: 'Artificial Intelligence and Machine Learning solutions to automate and optimize your business processes.',
+    features: ['Machine Learning', 'Natural Language Processing', 'Computer Vision', 'Predictive Analytics'],
+    price: 'Starting at $3,000',
+    category: 'AI Development',
+    color: '#5856D6',
+  },
+  {
+    id: '4',
+    name: 'Cloud Solutions',
+    description: 'Cloud infrastructure setup and deployment using AWS, Azure, or Google Cloud.',
+    features: ['Auto Scaling', 'Load Balancing', 'CDN Integration', 'Monitoring'],
+    price: 'Starting at $1,000',
+    category: 'Cloud Services',
+    color: '#FF9500',
+  },
+];
+
+// Team member data without JSX icons
+export const TEAM_MEMBERS: Omit<TeamMember, 'icon'>[] = [
+  {
+    title: 'Development Team',
+    description: 'Experienced developers specializing in modern web technologies and frameworks.',
+    color: '#007AFF',
+  },
+  {
+    title: 'Design Team',
+    description: 'Creative designers focused on user experience and modern interface design.',
+    color: '#34C759',
+  },
+  {
+    title: 'Project Management',
+    description: 'Dedicated project managers ensuring timely delivery and quality standards.',
+    color: '#FF9500',
+  },
+];
+
+// Why choose us data without JSX icons
+export const WHY_CHOOSE_US = [
+  {
+    text: 'Expert development team',
+    color: '#007AFF',
+  },
+  {
+    text: 'Modern technology stack',
+    color: '#34C759',
+  },
+  {
+    text: 'Agile development process',
+    color: '#5856D6',
+  },
+  {
+    text: '24/7 support and maintenance',
+    color: '#FF9500',
+  },
+];
+
+export const COMPANY_VALUES = [
+  'Innovation',
+  'Quality',
+  'Collaboration',
+  'Transparency',
+  'Excellence',
+  'Growth',
+];
+
+export const NAVIGATION_ITEMS = [
+  { name: 'Home', href: '/' },
+  { name: 'About', href: '/about' },
+  { name: 'Products', href: '/products' },
+  { name: 'Blogs', href: '/blogs' },
+  { name: 'Contact', href: '/contact' },
+];
+
+// Technologies we work with
+export const TECHNOLOGIES = [
+  {
+    id: '1',
+    name: 'Next.js',
+    category: 'Frontend',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
+    description: 'React framework for production',
+    color: '#000000',
+    gradient: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+  },
+  {
+    id: '2',
+    name: 'React',
+    category: 'Frontend',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+    description: 'JavaScript library for UI',
+    color: '#61DAFB',
+    gradient: 'linear-gradient(135deg, #61DAFB 0%, #21D4FD 100%)',
+  },
+  {
+    id: '3',
+    name: 'TypeScript',
+    category: 'Language',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
+    description: 'Typed JavaScript',
+    color: '#3178C6',
+    gradient: 'linear-gradient(135deg, #3178C6 0%, #4A90E2 100%)',
+  },
+  {
+    id: '4',
+    name: 'Node.js',
+    category: 'Backend',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+    description: 'JavaScript runtime',
+    color: '#339933',
+    gradient: 'linear-gradient(135deg, #339933 0%, #4CAF50 100%)',
+  },
+  {
+    id: '5',
+    name: 'Express.js',
+    category: 'Backend',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg',
+    description: 'Web framework for Node.js',
+    color: '#000000',
+    gradient: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+  },
+  {
+    id: '6',
+    name: 'MongoDB',
+    category: 'Database',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
+    description: 'NoSQL database',
+    color: '#47A248',
+    gradient: 'linear-gradient(135deg, #47A248 0%, #66BB6A 100%)',
+  },
+  {
+    id: '7',
+    name: 'PostgreSQL',
+    category: 'Database',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
+    description: 'Relational database',
+    color: '#336791',
+    gradient: 'linear-gradient(135deg, #336791 0%, #4A90E2 100%)',
+  },
+  {
+    id: '8',
+    name: 'AWS',
+    category: 'Cloud',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg',
+    description: 'Amazon Web Services',
+    color: '#FF9900',
+    gradient: 'linear-gradient(135deg, #FF9900 0%, #FFB74D 100%)',
+  },
+  {
+    id: '9',
+    name: 'Docker',
+    category: 'DevOps',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+    description: 'Containerization platform',
+    color: '#2496ED',
+    gradient: 'linear-gradient(135deg, #2496ED 0%, #42A5F5 100%)',
+  },
+  {
+    id: '10',
+    name: 'Python',
+    category: 'Language',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+    description: 'Programming language',
+    color: '#3776AB',
+    gradient: 'linear-gradient(135deg, #3776AB 0%, #5C6BC0 100%)',
+  },
+  {
+    id: '11',
+    name: 'React Native',
+    category: 'Mobile',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+    description: 'Cross-platform mobile development',
+    color: '#61DAFB',
+    gradient: 'linear-gradient(135deg, #61DAFB 0%, #21D4FD 100%)',
+  },
+  {
+    id: '12',
+    name: 'Flutter',
+    category: 'Mobile',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg',
+    description: 'Google\'s mobile UI framework',
+    color: '#02569B',
+    gradient: 'linear-gradient(135deg, #02569B 0%, #0277BD 100%)',
+  },
+  {
+    id: '13',
+    name: 'Swift',
+    category: 'Mobile',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg',
+    description: 'iOS development language',
+    color: '#FA7343',
+    gradient: 'linear-gradient(135deg, #FA7343 0%, #FF8A65 100%)',
+  },
+  {
+    id: '14',
+    name: 'Kotlin',
+    category: 'Mobile',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg',
+    description: 'Android development language',
+    color: '#7F52FF',
+    gradient: 'linear-gradient(135deg, #7F52FF 0%, #9C27B0 100%)',
+  },
+  {
+    id: '15',
+    name: 'TensorFlow',
+    category: 'AI/ML',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg',
+    description: 'Machine learning framework',
+    color: '#FF6F00',
+    gradient: 'linear-gradient(135deg, #FF6F00 0%, #FF9800 100%)',
+  },
+  {
+    id: '16',
+    name: 'PyTorch',
+    category: 'AI/ML',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg',
+    description: 'Deep learning framework',
+    color: '#EE4C2C',
+    gradient: 'linear-gradient(135deg, #EE4C2C 0%, #F44336 100%)',
+  },
+  {
+    id: '17',
+    name: 'OpenAI',
+    category: 'AI/ML',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg',
+    description: 'AI and language models',
+    color: '#00A67E',
+    gradient: 'linear-gradient(135deg, #00A67E 0%, #00BCD4 100%)',
+  },
+  {
+    id: '18',
+    name: 'Scikit-learn',
+    category: 'AI/ML',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg',
+    description: 'Machine learning library',
+    color: '#F7931E',
+    gradient: 'linear-gradient(135deg, #F7931E 0%, #FF9800 100%)',
+  },
+  {
+    id: '19',
+    name: 'Tailwind CSS',
+    category: 'Frontend',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg',
+    description: 'Utility-first CSS framework',
+    color: '#06B6D4',
+    gradient: 'linear-gradient(135deg, #06B6D4 0%, #00BCD4 100%)',
+  },
+  {
+    id: '20',
+    name: 'Material-UI',
+    category: 'Frontend',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/materialui/materialui-original.svg',
+    description: 'React component library',
+    color: '#0081CB',
+    gradient: 'linear-gradient(135deg, #0081CB 0%, #2196F3 100%)',
+  },
+  {
+    id: '21',
+    name: 'Firebase',
+    category: 'Backend',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg',
+    description: 'Google\'s mobile and web platform',
+    color: '#FFCA28',
+    gradient: 'linear-gradient(135deg, #FFCA28 0%, #FFA000 100%)',
+  },
+  {
+    id: '22',
+    name: 'PHP',
+    category: 'Backend',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
+    description: 'Server-side scripting language',
+    color: '#777BB4',
+    gradient: 'linear-gradient(135deg, #777BB4 0%, #5A67D8 100%)',
+  },
+];

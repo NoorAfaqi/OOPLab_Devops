@@ -1,0 +1,26 @@
+# ============================================================
+# EMAIL CONFIGURATION FOR SUBSCRIBERS API
+# ============================================================
+
+# Add these lines to your .env file for the Subscribers API to work
+
+# SMTP Host Configuration
+SMTP_HOST=smtp.hostinger.com
+
+# SMTP Port (587 for STARTTLS)
+SMTP_PORT=587
+
+# SMTP Username (from email address)
+SMTP_USER=subscribe@ooplab.org
+
+# SMTP Password
+SMTP_PASS=QwertyAsdf123$
+
+# ============================================================
+# HOW TO USE:
+# 1. Copy the above configuration to your .env file
+# 2. Make sure your .env file is in the root of ooplab-backend-express folder
+# 3. The email service will use these credentials to send emails
+# 4. Test the configuration by running: npm start
+# ============================================================
+
