@@ -224,7 +224,21 @@ deploy:prod:
         docker rm backend frontend || true
 
         echo "Starting backend container..."
-        docker run -d --name backend -p 5001:5001 $BACKEND_IMAGE:latest
+        docker run -d --name backend -p 5001:5001 \
+        -e NODE_ENV=$NODE_ENV \
+        -e PORT=$PORT \
+        -e DB_HOST=$DB_HOST \
+        -e DB_NAME=$DB_NAME \
+        -e DB_USER=$DB_USER \
+        -e DB_PASSWORD=$DB_PASSWORD \
+        -e DB_PORT=$DB_PORT \
+        -e CORS_ORIGIN=$CORS_ORIGIN \
+        -e RATE_LIMIT_WINDOW_MS=$RATE_LIMIT_WINDOW_MS \
+        -e RATE_LIMIT_MAX_REQUESTS=$RATE_LIMIT_MAX_REQUESTS \
+        -e JWT_SECRET=$JWT_SECRET \
+        -e FRONTEND_URL=$FRONTEND_URL \
+        $BACKEND_IMAGE:latest
+
 
         echo "Starting frontend container..."
         docker run -d --name frontend -p 80:80 $FRONTEND_IMAGE:latest
