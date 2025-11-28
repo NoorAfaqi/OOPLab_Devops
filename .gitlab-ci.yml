@@ -214,7 +214,7 @@ deploy:prod:
 
         echo "Checking disk space..."
         df -h /
-
+        docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
         echo "Pulling latest images..."
         docker pull $BACKEND_IMAGE:latest
         docker pull $FRONTEND_IMAGE:latest
