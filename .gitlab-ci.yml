@@ -201,10 +201,9 @@ deploy:prod:
     - apk add --no-cache openssh-client
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - echo $PROD_SERVER_HOST
     - mkdir -p ~/.ssh
+    - touch ~/.ssh/known_hosts       # <-- add this line
     - chmod 700 ~/.ssh
-    # - ssh-keyscan -H $PROD_SERVER_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
     - |
