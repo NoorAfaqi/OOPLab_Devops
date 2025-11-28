@@ -224,7 +224,7 @@ deploy:prod:
         docker rm backend frontend || true
 
         echo "Starting backend container..."
-        docker run -d --name backend -p 5001:5001 \
+        docker run -d --name backend -p 5001:3000 \
         -e NODE_ENV=$NODE_ENV \
         -e PORT=$PORT \
         -e DB_HOST=$DB_HOST \
@@ -241,7 +241,7 @@ deploy:prod:
 
 
         echo "Starting frontend container..."
-        docker run -d --name frontend -p 80:80 $FRONTEND_IMAGE:latest
+        docker run -d --name frontend -p 80:3000 $FRONTEND_IMAGE:latest
 
         echo "Cleaning unused images..."
         docker image prune -af || true
