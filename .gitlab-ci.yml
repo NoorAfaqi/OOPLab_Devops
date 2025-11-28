@@ -197,6 +197,7 @@ deploy:dev:
 deploy:prod:
   stage: deploy-prod
   image: alpine:latest
+
   before_script:
     - apk add --no-cache openssh-client
     - eval $(ssh-agent -s)
@@ -205,49 +206,42 @@ deploy:prod:
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $PROD_SERVER_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-  script: |
-    echo "Deploying to EC2 WITHOUT docker-compose..."
 
-    ssh -o StrictHostKeyChecking=no $PROD_SERVER_USER@$PROD_SERVER_HOST << 'ENDSSH'
-      set -e
+  script:
+    - |
+      echo "Deploying to AWS EC2 (pull public Docker images, no login)..."
 
-      echo "Logging into GitLab Registry..."
-      echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+      ssh -o StrictHostKeyChecking=no $PROD_SERVER_USER@$PROD_SERVER_HOST << 'ENDSSH'
+        set -e
 
-      echo "Pulling latest images..."
-      docker pull $BACKEND_IMAGE:$IMAGE_TAG
-      docker pull $FRONTEND_IMAGE:$IMAGE_TAG
+        echo "Checking disk space..."
+        df -h /
 
-      echo "Stopping old containers..."
-      docker stop backend || true
-      docker stop frontend || true
+        echo "Pulling latest backend & frontend images (public)..."
+        docker pull $BACKEND_IMAGE:latest
+        docker pull $FRONTEND_IMAGE:latest
 
-      echo "Removing old containers..."
-      docker rm backend || true
-      docker rm frontend || true
+        echo "Stopping old containers..."
+        docker stop backend || true
+        docker stop frontend || true
+        docker rm backend || true
+        docker rm frontend || true
 
-      echo "Starting new backend container..."
-      docker run -d \
-        --name backend \
-        -p 4000:4000 \
-        -e NODE_ENV=production \
-        $BACKEND_IMAGE:$IMAGE_TAG
+        echo "Starting backend container..."
+        docker run -d --name backend -p 5001:5001 $BACKEND_IMAGE:latest
 
-      echo "Starting new frontend container..."
-      docker run -d \
-        --name frontend \
-        -p 3000:3000 \
-        -e NODE_ENV=production \
-        $FRONTEND_IMAGE:$IMAGE_TAG
+        echo "Starting frontend container..."
+        docker run -d --name frontend -p 80:80 $FRONTEND_IMAGE:latest
 
-      echo "Cleaning unused images..."
-      docker image prune -af --filter "until=24h"
+        echo "Cleaning unused images..."
+        docker image prune -af || true
 
-      echo "Deployment Completed Successfully!"
-    ENDSSH
+        echo "Deployment finished successfully!"
+      ENDSSH
+
   environment:
     name: production
-    url: http://13.48.178.167
+    url: http://$PROD_SERVER_HOST
   only:
     - main
 
