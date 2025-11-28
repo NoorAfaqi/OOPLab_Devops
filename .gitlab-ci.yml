@@ -204,7 +204,7 @@ deploy:prod:
     - echo $PROD_SERVER_HOST
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - ssh-keyscan -H $PROD_SERVER_HOST >> ~/.ssh/known_hosts
+    # - ssh-keyscan -H $PROD_SERVER_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
     - |
