@@ -2,7 +2,6 @@ stages:
   - validate
   - build
   - test
-  - deploy-dev
   - deploy-prod
 
 variables:
@@ -140,58 +139,6 @@ test:frontend:
     - main
     - develop
     - merge_requests
-
-# Deploy to Development Environment
-deploy:dev:
-  stage: deploy-dev
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache openssh-client
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan -H $DEV_SERVER_HOST >> ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
-  script:
-    - |
-      echo "Deploying to development environment..."
-      ssh -o StrictHostKeyChecking=no $DEV_SERVER_USER@$DEV_SERVER_HOST << 'ENDSSH'
-        set -e
-        cd $DEV_DEPLOY_PATH || exit 1
-        
-        # Pull latest code
-        git fetch origin develop
-        git reset --hard origin/develop
-        
-        # Login to GitLab Container Registry
-        echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-        
-        # Pull latest images
-        docker pull $BACKEND_IMAGE:latest
-        docker pull $FRONTEND_IMAGE:latest
-        
-        # Stop existing containers
-        docker-compose -f docker-compose.yml -f docker-compose.dev.yml down || true
-        
-        # Start new containers
-        DOCKERFILE_BACKEND=Dockerfile.dev DOCKERFILE_FRONTEND=Dockerfile.dev docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
-        
-        # Clean up old images
-        docker image prune -f
-        
-        # Health check
-        sleep 10
-        curl -f http://localhost/health || exit 1
-        
-        echo "Development deployment completed successfully"
-      ENDSSH
-  environment:
-    name: development
-    url: http://$DEV_SERVER_HOST
-  only:
-    - develop
-  when: manual
 
 # Deploy to Production Environment (AWS EC2)
 deploy:prod:
