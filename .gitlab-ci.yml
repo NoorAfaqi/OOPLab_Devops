@@ -204,13 +204,18 @@ deploy:prod:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $PROD_SERVER_HOST >> ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts # Set correct permissions for known_hosts
   script:
     - |
       echo "Deploying to production environment on AWS EC2..."
-      ssh -o StrictHostKeyChecking=no $PROD_SERVER_USER@$PROD_SERVER_HOST << 'ENDSSH'
+      # Start SSH Session
+      ssh -o StrictHostKeyChecking=no $PROD_SERVER_USER@$PROD_SERVER_HOST << ENDSSH
         set -e
         cd $PROD_DEPLOY_PATH || exit 1
+        
+        # CRITICAL WARNING: Check for disk space. Log showed 99.0% usage.
+        echo "Checking disk usage..."
+        df -h .
         
         # Create backup of current deployment
         if [ -d "backup" ]; then
@@ -220,9 +225,8 @@ deploy:prod:
         mkdir -p backup/current
         docker-compose ps > backup/current/containers.txt 2>/dev/null || true
         
-        # Pull latest code
-        git fetch origin main
-        git reset --hard origin/main
+        # --- GIT COMMANDS ARE REMOVED HERE ---
+        # No 'git fetch' or 'git reset' because images are pre-built.
         
         # Login to GitLab Container Registry
         echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
@@ -231,8 +235,7 @@ deploy:prod:
         docker pull $BACKEND_IMAGE:$IMAGE_TAG
         docker pull $FRONTEND_IMAGE:$IMAGE_TAG
         
-        # Zero-downtime deployment
-        # Start new containers with different names
+        # Zero-downtime deployment (Scale up new containers)
         DOCKERFILE_BACKEND=Dockerfile.prod DOCKERFILE_FRONTEND=Dockerfile.prod docker-compose -f docker-compose.yml up -d --scale backend=2 --scale frontend=2 --no-recreate
         
         # Wait for health checks
@@ -245,18 +248,18 @@ deploy:prod:
             echo "Health check passed"
             break
           fi
-          echo "Health check attempt $i failed, retrying..."
+          echo "Health check attempt \$i failed, retrying..."
           sleep 5
         done
         
-        # Stop old containers (rolling update)
+        # Stop old containers (Rolling update)
         docker-compose -f docker-compose.yml stop backend frontend || true
         docker-compose -f docker-compose.yml rm -f backend frontend || true
         
-        # Start with single instance
+        # Start with single instance (Restore desired state and clean up temporary scale-up)
         DOCKERFILE_BACKEND=Dockerfile.prod DOCKERFILE_FRONTEND=Dockerfile.prod docker-compose -f docker-compose.yml up -d
         
-        # Clean up old images
+        # Clean up old images (Helps with 99% disk usage)
         docker image prune -af --filter "until=24h"
         
         # Final health check
@@ -267,10 +270,9 @@ deploy:prod:
       ENDSSH
   environment:
     name: production
-    url: http://$PROD_SERVER_HOST
+    url: http://13.48.178.167
   only:
     - main
-  when: manual
 
 # Monitoring and notification (optional)
 notify:deployment:
