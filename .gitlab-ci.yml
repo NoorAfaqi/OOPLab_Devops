@@ -197,9 +197,7 @@ deploy:dev:
 deploy:prod:
   stage: deploy-prod
   image: alpine:latest
-
   before_script:
-    - ssh -o StrictHostKeyChecking=no $PROD_SERVER_USER@$PROD_SERVER_HOST "echo connected"
     - apk add --no-cache openssh-client
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
@@ -207,26 +205,23 @@ deploy:prod:
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $PROD_SERVER_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-
   script:
     - |
-      echo "Deploying to AWS EC2 (pull public Docker images, no login)..."
+      echo "Deploying to AWS EC2..."
 
-      ssh -o StrictHostKeyChecking=no $PROD_SERVER_USER@$PROD_SERVER_HOST << 'ENDSSH'
+      ssh -o StrictHostKeyChecking=no $PROD_SERVER_USER@$PROD_SERVER_HOST << ENDSSH
         set -e
 
         echo "Checking disk space..."
         df -h /
 
-        echo "Pulling latest backend & frontend images (public)..."
+        echo "Pulling latest images..."
         docker pull $BACKEND_IMAGE:latest
         docker pull $FRONTEND_IMAGE:latest
 
         echo "Stopping old containers..."
-        docker stop backend || true
-        docker stop frontend || true
-        docker rm backend || true
-        docker rm frontend || true
+        docker stop backend frontend || true
+        docker rm backend frontend || true
 
         echo "Starting backend container..."
         docker run -d --name backend -p 5001:5001 $BACKEND_IMAGE:latest
@@ -239,7 +234,6 @@ deploy:prod:
 
         echo "Deployment finished successfully!"
       ENDSSH
-
   environment:
     name: production
     url: http://$PROD_SERVER_HOST
