@@ -227,7 +227,9 @@ deploy:prod:
         
         # --- GIT COMMANDS ARE REMOVED HERE ---
         # No 'git fetch' or 'git reset' because images are pre-built.
-        
+        # 1. Aggressive pre-pull cleanup (New Step)
+        echo "Running pre-pull docker cleanup to free space..."
+        docker system prune -f -a --volumes || true
         # Login to GitLab Container Registry
         echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
         
