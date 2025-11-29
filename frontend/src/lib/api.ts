@@ -1,6 +1,6 @@
 // API service functions for communicating with the backend
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ooplab-backend-exprress.onrender.com/api';
+const API_BASE_URL = ${NEXT_PUBLIC_API_URL} || 'https://ooplab-backend-exprress.onrender.com/api';
 
 export interface ApiProduct {
   PID: number;
